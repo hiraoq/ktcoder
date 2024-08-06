@@ -3,12 +3,39 @@
  */
 package org.example
 
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.PrintStream
 import kotlin.test.Test
-import kotlin.test.assertNotNull
+import kotlin.test.assertEquals
 
 class AppTest {
-    @Test fun appHasAGreeting() {
-        val classUnderTest = App()
-        assertNotNull(classUnderTest.greeting, "app should have a greeting")
+
+    @Test
+    fun testSolve() {
+        val inputFile = File("./handinput.txt")
+        val outputFile = File("./output.txt")
+
+        val inputs = inputFile.readText().split("\n\n")
+        val expectedOutputs = outputFile.readText().split("\n\n")
+
+        inputs.zip(expectedOutputs).forEach { (input, expectedOutput) ->
+            // Set up the input and output streams
+            val inputStream = ByteArrayInputStream(input.toByteArray())
+            val outputStream = ByteArrayOutputStream()
+            System.setIn(inputStream)
+            System.setOut(PrintStream(outputStream))
+
+            // Call the solve method
+            val app = App()
+            app.main()
+
+            // Get the actual output
+            val actualOutput = outputStream.toString().trim()
+
+            // Verify the output
+            assertEquals(expectedOutput.trim(), actualOutput)
+        }
     }
 }
